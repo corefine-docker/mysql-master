@@ -198,7 +198,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 			echo ########## set env SYNC_PASSWORD is "$SYNC_PASSWORD" ##########
 		fi
 		create_user="CREATE USER 'sync'@'%' IDENTIFIED BY '$SYNC_PASSWORD';"
-		grant_user="GRANT ALL PRIVILEGES ON *.* TO 'sync'@'%';"
+		grant_user="GRANT SELECT,REPLICATION SLAVE ON *.* TO 'sync'@'%';"
 		echo "########## $create_user ##########"
 		echo "$create_user" | "${mysql[@]}"
 		echo "########## $grant_user ##########"
