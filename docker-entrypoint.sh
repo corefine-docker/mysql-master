@@ -87,6 +87,10 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" -a "$(id -u)" = '0' ]; then
 	chown -R mysql:mysql "$DATADIR"
 	
 	serid=$(date +%s)
+	echo "########## use config: max_allowed_packet=10M ##########"
+	echo max_allowed_packet=6M >> /etc/mysql/mysql.conf.d/mysqld.cnf
+	echo "########## use config: default-time_zone='+8:00' ##########"
+	echo default-time_zone='+8:00' >> /etc/mysql/mysql.conf.d/mysqld.cnf
 	echo "########## use config: log-bin=mysql-bin ##########"
 	echo log-bin=mysql-bin >> /etc/mysql/mysql.conf.d/mysqld.cnf
 	echo "########## use config: server-id=$serid ##########"
