@@ -77,7 +77,9 @@ _check_config() {
 # latter only show values present in config files, and not server defaults
 _get_config() {
 	local conf="$1"; shift
-	"$@" --verbose --help --log-bin-index="$(mktemp -u)" 2>/dev/null | awk '$1 == "'"$conf"'" { print $2; exit }'
+	"$@" --verbose --help --log-bin-index="$(mktemp -u)" 2>/dev/null \
+		| awk '$1 == "'"$conf"'" && /^[^ \t]/ { sub(/^[^ \t]+[ \t]+/, ""); print; exit }'
+	# match "datadir      /some/path with/spaces in/it here" but not "--xyz=abc\n     datadir (xyz)"
 }
 # allow the container to be started with `--user`
 if [ "$1" = 'mysqld' -a -z "$wantHelp" -a "$(id -u)" = '0' ]; then
@@ -86,15 +88,18 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" -a "$(id -u)" = '0' ]; then
 	mkdir -p "$DATADIR"
 	chown -R mysql:mysql "$DATADIR"
 	
-	serid=$(date +%s)
+	echo "########## add custom config ##########"
+	mkdir /etc/mysql/conf
+	chmod 775 /etc/mysql/conf
+	echo '!includedir /etc/mysql/conf/' >> /etc/mysql/my.cnf
+
+	# serid=$[$(date +%s)-1000000000]
 	echo "########## use config: max_allowed_packet=500M ##########"
-	echo max_allowed_packet=500M >> /etc/mysql/conf.d/fine.cnf
-	echo "########## use config: default-time_zone='+8:00' ##########"
-	echo default-time_zone='+8:00' >> /etc/mysql/conf.d/fine.cnf
-	echo "########## use config: log-bin=mysql-bin ##########"
-	echo log-bin=mysql-bin >> /etc/mysql/conf.d/fine.cnf
-	echo "########## use config: server-id=$serid ##########"
-	echo server-id=$serid >> /etc/mysql/conf.d/fine.cnf
+	echo max_allowed_packet=500M >> /etc/mysql/conf.d/mysql.cnf
+	# echo "########## use config: default-time_zone='+8:00' ##########"
+	# echo default-time-zone='+8:00' >> /etc/mysql/conf.d/mysql.cnf
+	# echo "########## use config: server-id=$serid ##########"
+	# echo server-id=$serid >> /etc/mysql/conf.d/mysql.cnf
 	
 	exec gosu mysql "$BASH_SOURCE" "$@"
 fi
@@ -167,7 +172,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 			--  or products like mysql-fabric won't work
 			SET @@SESSION.SQL_LOG_BIN=0;
 
-			SET PASSWORD FOR 'root'@'localhost'=PASSWORD('${MYSQL_ROOT_PASSWORD}') ;
+			ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}' ;
 			GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION ;
 			${rootCreate}
 			DROP DATABASE IF EXISTS test ;
@@ -199,7 +204,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 		uuid=$(cat /proc/sys/kernel/random/uuid)
 		if [ -z "$SYNC_PASSWORD" ] ;then
 			SYNC_PASSWORD=${uuid//-/}
-			echo ########## set env SYNC_PASSWORD is "$SYNC_PASSWORD" ##########
+			echo -e "\r\n\r\n\r\n********** set SYNC_PASSWORD $SYNC_PASSWORD **********\r\n\r\n\r\n"
 		fi
 		create_user="CREATE USER 'sync'@'%' IDENTIFIED BY '$SYNC_PASSWORD';"
 		grant_user="GRANT SELECT,REPLICATION SLAVE ON *.* TO 'sync'@'%';"
