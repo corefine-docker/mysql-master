@@ -88,13 +88,13 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" -a "$(id -u)" = '0' ]; then
 	
 	serid=$(date +%s)
 	echo "########## use config: max_allowed_packet=500M ##########"
-	echo max_allowed_packet=500M >> /etc/mysql/mysql.conf.d/mysqld.cnf
+	echo max_allowed_packet=500M >> /etc/mysql/conf.d/fine.cnf
 	echo "########## use config: default-time_zone='+8:00' ##########"
-	echo default-time_zone='+8:00' >> /etc/mysql/mysql.conf.d/mysqld.cnf
+	echo default-time_zone='+8:00' >> /etc/mysql/conf.d/fine.cnf
 	echo "########## use config: log-bin=mysql-bin ##########"
-	echo log-bin=mysql-bin >> /etc/mysql/mysql.conf.d/mysqld.cnf
+	echo log-bin=mysql-bin >> /etc/mysql/conf.d/fine.cnf
 	echo "########## use config: server-id=$serid ##########"
-	echo server-id=$serid >> /etc/mysql/mysql.conf.d/mysqld.cnf
+	echo server-id=$serid >> /etc/mysql/conf.d/fine.cnf
 	
 	exec gosu mysql "$BASH_SOURCE" "$@"
 fi
