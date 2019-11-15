@@ -101,7 +101,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" -a "$(id -u)" = '0' ]; then
 		# echo default-time-zone='+8:00' >> /etc/mysql/conf.d/mysql.cnf
 		# echo "########## use config: server-id=$serid ##########"
 		# echo server-id=$serid >> /etc/mysql/conf.d/mysql.cnf
-	if
+	fi
 	
 	exec gosu mysql "$BASH_SOURCE" "$@"
 fi
