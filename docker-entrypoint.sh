@@ -95,7 +95,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" -a "$(id -u)" = '0' ]; then
 
 	# serid=$[$(date +%s)-1000000000]
 	echo "########## use config: max_allowed_packet=500M ##########"
-	echo max_allowed_packet=500M >> /etc/mysql/conf.d/mysql.cnf
+	echo max_allowed_packet=500M > /etc/mysql/conf.d/mysql.cnf
 	# echo "########## use config: default-time_zone='+8:00' ##########"
 	# echo default-time-zone='+8:00' >> /etc/mysql/conf.d/mysql.cnf
 	# echo "########## use config: server-id=$serid ##########"
