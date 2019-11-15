@@ -88,18 +88,20 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" -a "$(id -u)" = '0' ]; then
 	mkdir -p "$DATADIR"
 	chown -R mysql:mysql "$DATADIR"
 	
-	echo "########## add custom config ##########"
-	mkdir -p /etc/mysql/conf
-	chmod 775 /etc/mysql/conf
-	echo '!includedir /etc/mysql/conf/' >> /etc/mysql/my.cnf
+	if [ ! -d "/etc/mysql/conf" ]; then
+		echo "########## add custom config ##########"
+		mkdir -p /etc/mysql/conf
+		chmod 775 /etc/mysql/conf
+		echo '!includedir /etc/mysql/conf/' >> /etc/mysql/my.cnf
 
-	# serid=$[$(date +%s)-1000000000]
-	echo "########## use config: max_allowed_packet=500M ##########"
-	echo max_allowed_packet=500M > /etc/mysql/conf.d/mysql.cnf
-	# echo "########## use config: default-time_zone='+8:00' ##########"
-	# echo default-time-zone='+8:00' >> /etc/mysql/conf.d/mysql.cnf
-	# echo "########## use config: server-id=$serid ##########"
-	# echo server-id=$serid >> /etc/mysql/conf.d/mysql.cnf
+		# serid=$[$(date +%s)-1000000000]
+		echo "########## use config: max_allowed_packet=500M ##########"
+		echo max_allowed_packet=500M > /etc/mysql/conf.d/mysql.cnf
+		# echo "########## use config: default-time_zone='+8:00' ##########"
+		# echo default-time-zone='+8:00' >> /etc/mysql/conf.d/mysql.cnf
+		# echo "########## use config: server-id=$serid ##########"
+		# echo server-id=$serid >> /etc/mysql/conf.d/mysql.cnf
+	if
 	
 	exec gosu mysql "$BASH_SOURCE" "$@"
 fi
