@@ -89,7 +89,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" -a "$(id -u)" = '0' ]; then
 	chown -R mysql:mysql "$DATADIR"
 	
 	echo "########## add custom config ##########"
-	mkdir /etc/mysql/conf
+	mkdir -p /etc/mysql/conf
 	chmod 775 /etc/mysql/conf
 	echo '!includedir /etc/mysql/conf/' >> /etc/mysql/my.cnf
 
