@@ -86,16 +86,6 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" -a "$(id -u)" = '0' ]; then
 	mkdir -p "$DATADIR"
 	chown -R mysql:mysql "$DATADIR"
 	
-	serid=$(date +%s)
-	echo "########## use config: max_allowed_packet=500M ##########"
-	echo max_allowed_packet=500M >> /etc/mysql/mysql.conf.d/mysqld.cnf
-	echo "########## use config: default-time_zone='+8:00' ##########"
-	echo default-time_zone='+8:00' >> /etc/mysql/mysql.conf.d/mysqld.cnf
-	echo "########## use config: log-bin=mysql-bin ##########"
-	echo log-bin=mysql-bin >> /etc/mysql/mysql.conf.d/mysqld.cnf
-	echo "########## use config: server-id=$serid ##########"
-	echo server-id=$serid >> /etc/mysql/mysql.conf.d/mysqld.cnf
-	
 	exec gosu mysql "$BASH_SOURCE" "$@"
 fi
 if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
@@ -114,6 +104,16 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 		echo 'Initializing database'
 		"$@" --initialize-insecure
 		echo 'Database initialized'
+
+		serid=$(date +%s)
+		echo "########## use config: max_allowed_packet=500M ##########"
+		echo max_allowed_packet=500M >> /etc/mysql/mysql.conf.d/mysqld.cnf
+		echo "########## use config: default-time_zone='+8:00' ##########"
+		echo default-time_zone='+8:00' >> /etc/mysql/mysql.conf.d/mysqld.cnf
+		echo "########## use config: log-bin=mysql-bin ##########"
+		echo log-bin=mysql-bin >> /etc/mysql/mysql.conf.d/mysqld.cnf
+		echo "########## use config: server-id=$serid ##########"
+		echo server-id=$serid >> /etc/mysql/mysql.conf.d/mysqld.cnf
 
 		if command -v mysql_ssl_rsa_setup > /dev/null && [ ! -e "$DATADIR/server-key.pem" ]; then
 			# https://github.com/mysql/mysql-server/blob/23032807537d8dd8ee4ec1c4d40f0633cd4e12f9/packaging/deb-in/extra/mysql-systemd-start#L81-L84
